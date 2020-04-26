@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="sort-box">
+    <div class="sort-box" @click="reSort(count)">
       <div style="display:flex;align-items:flex-end" class="w-100 h-100">
         <div
           style="display:flex;align-items:flex-end"
@@ -13,14 +13,14 @@
             height: ((count - _ + 1) * 100) / count + '%'
           }"
         >
-          <!-- <b-icon
+          <b-icon
             v-if="cursorIndexes.includes(index)"
             class="cursor"
             icon="caret-up-fill"
-          ></b-icon> -->
+          ></b-icon>
         </div>
       </div>
-      <span style="color:white;font-size:12px">{{ algorithm }}</span>
+      <span class="algorithm-name">{{ algorithm }} {{ type }}</span>
     </div>
     <!-- <b-button @click="shuffle()">Karıştır</b-button> -->
   </div>
@@ -31,44 +31,61 @@ export default {
   props: {
     algorithm: {
       type: String,
-      default: 'bubble-sort'
+      default: "bubble"
+    },
+    type: {
+      type: String,
+      default: "random"
     }
   },
   data() {
     return {
-      count: 25,
+      count: 20,
       arr: [],
-      cursorIndexes: [30, 12],
+      cursorIndexes: [],
       b: null,
       sleepTime: 75
     };
   },
   created() {
-    for (let i = 1; i <= this.count; i++) {
-      this.arr.push(i);
-    }
-
-    this.shuffle();
-
-    if (this.algorithm === 'bubble-sort') {
-      this.bubbleSort();
-    } else if (this.algorithm === 'insertion-sort') {
-      this.insertionSort();
-    } else if (this.algorithm === 'selection-sort') {
-      this.selectionSort();
-    } else if (this.algorithm === 'quick-sort') {
-      this.quickSort(0, this.count - 1);
-    } else if (this.algorithm === 'merge-sort') {
-      this.mergeSort(0, this.count - 1);
-    } else if (this.algorithm === 'heap-sort') {
-      this.heapSort();
-    }
-
-    // this.sort(0, this.count - 1);
-
-    // console.log(this.mergeSort(this.arr));
+    this.reSort(this.count);
   },
   methods: {
+    reSort(c) {
+      if (this.cursorIndexes.length > 0) return;
+      this.count = c;
+      this.arr = [];
+      for (let i = 1; i <= this.count; i++) {
+        this.arr.push(i);
+      }
+
+      if (this.type === "random") {
+        this.shuffle();
+      } else if (this.type === "reversed") {
+        console.log();
+      } else if (this.type === "nearly") {
+        this.arr.reverse();
+        for (let i = 0; i < this.count; i += 4) {
+          const t = this.arr[i];
+          this.arr[i] = this.arr[i + 1];
+          this.arr[i + 1] = t;
+        }
+      }
+
+      if (this.algorithm === "bubble") {
+        this.bubbleSort();
+      } else if (this.algorithm === "insertion") {
+        this.insertionSort();
+      } else if (this.algorithm === "selection") {
+        this.selectionSort();
+      } else if (this.algorithm === "quick") {
+        this.quickSort(0, this.count - 1);
+      } else if (this.algorithm === "merge") {
+        this.mergeSort(0, this.count - 1);
+      } else if (this.algorithm === "heap") {
+        this.heapSort();
+      }
+    },
     sleep() {
       return new Promise(resolve => setTimeout(resolve, this.sleepTime));
     },
@@ -170,18 +187,14 @@ export default {
       let n1 = m - l + 1;
       let n2 = r - m;
 
-      /* create temp arrays */
       let L = Array(n1),
         R = Array(n2);
 
-      /* Copy data to temp arrays L[] and R[] */
       for (i = 0; i < n1; i++) L[i] = this.arr[l + i];
       for (j = 0; j < n2; j++) R[j] = this.arr[m + 1 + j];
-
-      /* Merge the temp this.arrays back into this.arr[l..r]*/
-      i = 0; // Initial index of first subthis.array
-      j = 0; // Initial index of second subthis.array
-      k = l; // Initial index of merged subthis.array
+      i = 0;
+      j = 0;
+      k = l;
       while (i < n1 && j < n2) {
         await this.sleep();
         this.cursorIndexes = [l + i, m + 1 + j];
@@ -194,9 +207,6 @@ export default {
         }
         k++;
       }
-
-      /* Copy the remaining elements of L[], if there
-       are any */
       while (i < n1) {
         this.$set(this.arr, k, L[i]);
         this.cursorIndexes = [l + i, m + 1 + j];
@@ -204,8 +214,6 @@ export default {
         k++;
       }
 
-      /* Copy the remaining elements of R[], if there
-       are any */
       while (j < n2) {
         this.$set(this.arr, k, R[j]);
         this.cursorIndexes = [l + i, m + 1 + j];
@@ -213,64 +221,47 @@ export default {
         k++;
       }
     },
-
-    /* l is for left index and r is right index of the
-   sub-array of arr to be sorted */
     async mergeSort(l, r) {
       if (l < r) {
-        // Same as (l+r)/2, but as overflow for
-        // large l and h
         let m = Math.floor(l + (r - l) / 2);
 
-        // Sort first and second halves
         await this.mergeSort(l, m);
         await this.mergeSort(m + 1, r);
-
         await this.merge(l, m, r);
-        this.cursorIndexes = [];
       }
+      this.cursorIndexes = [];
     },
     async heapify(n, i) {
-      let largest = i; // Initialize largest as root
-      let l = 2 * i + 1; // left = 2*i + 1
-      let r = 2 * i + 2; // right = 2*i + 2
+      let largest = i;
+      let l = 2 * i + 1;
+      let r = 2 * i + 2;
 
-      // If left child is larger than root
       if (l < n && this.arr[l] < this.arr[largest]) largest = l;
 
-      // If right child is larger than largest so far
       if (r < n && this.arr[r] < this.arr[largest]) largest = r;
       this.cursorIndexes = [l, r];
       await this.sleep();
-      // If largest is not root
       if (largest != i) {
         {
           let temp = this.arr[i];
           this.$set(this.arr, i, this.arr[largest]);
           this.$set(this.arr, largest, temp);
         }
-
-        // Recursively heapify the affected sub-tree
         await this.heapify(n, largest);
       }
     },
 
-    // main function to do heap sort
     async heapSort() {
-      // Build heap (rearrange array)
       for (let i = Math.floor(this.count / 2 - 1); i >= 0; i--)
         await this.heapify(this.count, i);
 
-      // One by one extract an element from heap
       for (let i = this.count - 1; i > 0; i--) {
-        // Move current root to end
         let temp = this.arr[i];
         this.$set(this.arr, i, this.arr[0]);
         this.$set(this.arr, 0, temp);
-
-        // call max heapify on the reduced heap
         await this.heapify(i, 0);
       }
+      console.log(this.algorithm + " end");
       this.cursorIndexes = [];
     }
   }
@@ -279,28 +270,44 @@ export default {
 
 <style>
 .sort-box {
+  border-radius: 8px;
   background: #393e46;
-  padding: 24px 8px;
+  padding: 24px;
 
   width: 100%;
   height: 150px;
-  border-radius: 8px;
-  margin-top: 4px;
+  cursor: pointer;
+  margin: 14px 0;
+
+  -webkit-box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.55);
+  -moz-box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.55);
+  box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.55);
+  border: 1px solid #ffffff22;
 }
+
 .bar {
   background: #eee;
   height: 100%;
-  margin-right: 2px;
+  margin-right: 1px;
   border-radius: 2px;
   text-align: center;
 }
 .cursor {
   text-align: center;
   margin-bottom: -12px;
-  margin-left: -1px;
-  color: #4ecca3;
+
+  color: #f0daa4;
+  font-size: 8px;
 }
 .pointed {
-  background: #4ecca3;
+  background: #f0daa4;
+}
+.box-overlay {
+  background: red;
+}
+.algorithm-name {
+  color: white;
+  font-size: 12px;
+  opacity: 0.5;
 }
 </style>
