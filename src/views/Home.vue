@@ -25,7 +25,7 @@
     <b-row>
       <b-col>
         <div class="title mb-5 mt-5">
-          Sorting Algotihms Vuesualizations
+          Sorting Algorithms Vuesualizations
         </div>
       </b-col>
     </b-row>
