@@ -1,24 +1,3 @@
-# vuesort
+# sorting-vuesualization
 
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![Image of Yaktocat](https://i.ibb.co/j3pKZXm/Ekran-Resmi-2020-04-26-19-16-58.png)
