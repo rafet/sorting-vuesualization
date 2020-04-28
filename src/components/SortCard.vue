@@ -212,6 +212,7 @@ export default {
         this.cursorIndexes = [l + i, m + 1 + j];
         i++;
         k++;
+        await this.sleep();
       }
 
       while (j < n2) {
@@ -219,6 +220,7 @@ export default {
         this.cursorIndexes = [l + i, m + 1 + j];
         j++;
         k++;
+        await this.sleep();
       }
     },
     async mergeSort(l, r) {
