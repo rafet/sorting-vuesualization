@@ -1,6 +1,17 @@
 <template>
   <div>
-    <div class="sort-box" @click="reSort(count)">
+    <div
+      class="sort-box"
+      :class="{ 'no-flat': !flat, flat: flat }"
+      @click="reSort(count)"
+      @mouseover="showExpand = true"
+      @mouseleave="showExpand = false"
+    >
+      <i
+        @click="$emit('onexpand', type, algorithm)"
+        v-if="showExpand && !flat"
+        class="fas fa-expand-alt expand-icon"
+      ></i>
       <div style="display:flex;align-items:flex-end" class="w-100 h-100">
         <div
           style="display:flex;align-items:flex-end"
@@ -20,7 +31,9 @@
           ></b-icon>
         </div>
       </div>
-      <span class="algorithm-name">{{ algorithm }} {{ type }}</span>
+      <span v-if="!flat" class="algorithm-name"
+        >{{ algorithm }} {{ type }}</span
+      >
     </div>
     <!-- <b-button @click="shuffle()">Karıştır</b-button> -->
   </div>
@@ -36,15 +49,23 @@ export default {
     type: {
       type: String,
       default: "random"
+    },
+    count: {
+      type: Number,
+      default: 20
+    },
+    flat: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      count: 20,
       arr: [],
       cursorIndexes: [],
       b: null,
-      sleepTime: 75
+      sleepTime: 75,
+      showExpand: false
     };
   },
   created() {
@@ -166,6 +187,8 @@ export default {
           this.$set(this.arr, j, temp);
         }
       }
+      await this.sleep();
+      this.cursorIndexes = [i + 1, high];
       temp = this.arr[i + 1];
       this.$set(this.arr, i + 1, this.arr[high]);
       this.$set(this.arr, high, temp);
@@ -265,28 +288,37 @@ export default {
       }
       console.log(this.algorithm + " end");
       this.cursorIndexes = [];
-    }
+    },
+
+    clickExpand() {}
   }
 };
 </script>
 
 <style>
 .sort-box {
-  border-radius: 8px;
   background: #393e46;
-  padding: 24px;
-
   width: 100%;
-  height: 150px;
+  height: 100%;
   cursor: pointer;
-  margin: 14px 0;
-
+  padding: 14px;
+}
+.no-flat {
   -webkit-box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.55);
   -moz-box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.55);
   box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.55);
   border: 1px solid #ffffff22;
+  border-radius: 8px;
+  margin: 14px 0;
+  padding: 24px;
 }
-
+.flat {
+  padding: 24px;
+  border-radius: 8px;
+  -webkit-box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.55);
+  -moz-box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.55);
+  box-shadow: 0px 0px 21px 0px rgba(0, 0, 0, 0.55);
+}
 .bar {
   background: #eee;
   height: 100%;
@@ -311,5 +343,13 @@ export default {
   color: white;
   font-size: 12px;
   opacity: 0.5;
+}
+.expand-icon {
+  position: absolute;
+  left: 26px;
+  top: 24px;
+  z-index: 11;
+  font-size: 12px;
+  color: white;
 }
 </style>

@@ -1,5 +1,18 @@
 <template>
   <div class="container main-container">
+    <div class="expand-panel" v-if="showExpandPanel">
+      <b-row align-v="center" align-h="center">
+        <b-col lg="6" sm="12" xs="12">
+          <ExpandPanel
+            :type="selected.type"
+            class="m-2"
+            style="z-index:123123; display:block;"
+            :algorithm="selected.algorithm"
+            @close="showExpandPanel = false"
+          />
+        </b-col>
+      </b-row>
+    </div>
     <b-row align-h="between" align-v="center">
       <b-col cols="auto" class="text-light">
         <a
@@ -66,34 +79,16 @@
             xxs="6"
             lg="2"
             mdd="4"
-            v-for="item in algorithms"
-            :key="'random' + item"
+            v-for="item in t_a"
+            :key="'random' + item.algorithm + item.type"
           >
-            <SortCard ref="cell" type="random" :algorithm="item" />
-          </b-col>
-          <b-col
-            sm="6"
-            xxxs="6"
-            xs="6"
-            xxs="6"
-            lg="2"
-            mdd="4"
-            v-for="item in algorithms"
-            :key="'reversed' + item"
-          >
-            <SortCard ref="cell" type="reversed" :algorithm="item" />
-          </b-col>
-          <b-col
-            sm="6"
-            xxxs="6"
-            xs="6"
-            xxs="6"
-            lg="2"
-            mdd="4"
-            v-for="item in algorithms"
-            :key="'nearly' + item"
-          >
-            <SortCard ref="cell" type="nearly" :algorithm="item" />
+            <SortCard
+              style="height:150px"
+              ref="cell"
+              :type="item.type"
+              :algorithm="item.algorithm"
+              @onexpand="clickExpand"
+            />
           </b-col>
         </b-row>
       </b-col>
@@ -103,9 +98,10 @@
 
 <script>
 import SortCard from "../components/SortCard";
+import ExpandPanel from "../components/ExpandPanel";
 
 export default {
-  components: { SortCard },
+  components: { SortCard, ExpandPanel },
   data() {
     return {
       types: ["random", "reversed", "nearly"],
@@ -117,12 +113,29 @@ export default {
         "merge",
         "heap"
       ],
-      count: 20
+      count: 20,
+      selected: {
+        type: null,
+        algorithm: null
+      },
+      showExpandPanel: false
     };
   },
   computed: {
     cellWidth() {
       return console.log(this.$refs.cell[0]);
+    },
+    t_a() {
+      const arr = [];
+      this.types.forEach(x => {
+        this.algorithms.forEach(y => {
+          arr.push({
+            type: x,
+            algorithm: y
+          });
+        });
+      });
+      return arr;
     }
   },
   methods: {
@@ -130,6 +143,13 @@ export default {
       this.$refs.cell.forEach(element => {
         element.reSort(this.count);
       });
+    },
+    clickExpand(t, a) {
+      this.showExpandPanel = true;
+      this.selected = {
+        type: t,
+        algorithm: a
+      };
     }
   }
 };
@@ -173,5 +193,15 @@ table,
 th,
 td {
   border: 1px solid #ffffff33 !important;
+}
+.expand-panel {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000cc;
+
+  z-index: 111;
 }
 </style>
