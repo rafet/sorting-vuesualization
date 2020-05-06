@@ -16,7 +16,7 @@
     <b-row align-h="between" align-v="center">
       <b-col cols="auto" class="text-light">
         <a
-          href="https://github.com/rafettopcu"
+          href="https://github.com/rafet"
           target="_blank"
           style="color:#34495e"
         >
